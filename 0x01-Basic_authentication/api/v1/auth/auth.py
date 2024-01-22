@@ -8,8 +8,23 @@ class Auth:
     """ Authenticaton class """
 
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
-        """ returns false """
-        return False
+        """ defining which routes to authenticate """
+        if path is None or excluded_paths is None or excluded_paths == []:
+            return True
+
+        path_len = len(path)
+        if path_len == 0:
+            return True
+        hasSlash = True if path[path_len - 1] == "/" else False
+
+        tmp_path = path
+        if not hasSlash:
+            tmp_path += "/"
+
+        for i in excluded_paths:
+            if tmp_path == i:
+                return False
+        return True
 
     def authorization_header(self, request=None) -> str:
         """ returns None """
