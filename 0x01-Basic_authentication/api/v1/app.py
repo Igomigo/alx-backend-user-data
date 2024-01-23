@@ -24,7 +24,7 @@ elif AUTH_TYPE == "basic_auth":
 
 
 @app.before_request
-def before_request():
+def before_request() -> str:
     """ Method that filters all requests
     """
     if auth is None:
@@ -34,7 +34,7 @@ def before_request():
                       '/api/v1/unauthorized/',
                       '/api/v1/forbidden/']
 
-    if auth.require_auth(request.path, excluded_paths) is True:
+    if not auth.require_auth(request.path, excluded_paths):
         return
 
     if auth.authorization_header(request) is None:
