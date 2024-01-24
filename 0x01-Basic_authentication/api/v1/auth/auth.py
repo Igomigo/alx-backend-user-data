@@ -28,7 +28,7 @@ class Auth:
 
     def authorization_header(self, request=None) -> str:
         """ validates all requests """
-        if request is None or "Authorization" not in request.keys():
+        if request is None or "Authorization" not in request..headers.keys():
             return None
         return request.headers.get("Authorization")
 
