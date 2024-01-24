@@ -30,7 +30,7 @@ class Auth:
         """ validates all requests """
         if request is None or "Authorization" not in request.keys():
             return None
-        return request.get("Authorization")
+        return request.headers.get("Authorization")
 
     def current_user(self, request=None) -> TypeVar('User'):
         """ returns None """
