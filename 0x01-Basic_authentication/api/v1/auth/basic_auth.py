@@ -20,8 +20,9 @@ class BasicAuth(Auth):
                                            base64_authorization_header: str
                                            ) -> str:
         """ decodes the value of a base64 string """
-        if base64_authorization_header is None or not isinstance\
-                (base64_authorization_header, str):
+        if base64_authorization_header is None:
+            return None
+        if not isinstance(base64_authorization_header, str):
             return None
         try:
             encoded = base64_authorization_header.encode('utf-8')
