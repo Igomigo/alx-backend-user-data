@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """ basic authentication module """
 from api.v1.auth.auth import Auth
+from base64 import b64decode
 
 
 class BasicAuth(Auth):
@@ -39,7 +40,7 @@ class BasicAuth(Auth):
                                  decoded_base64_authorization_header: str
                                  ) -> (str, str):
         """ returns the user email and password """
-        if decoded_base64_authorization_header is None:
+        if decoded_base64_autgorization_header is None:
             return (None, None)
         if not isinstance(decoded_base64_authorization_header, str):
             return (None, None)
