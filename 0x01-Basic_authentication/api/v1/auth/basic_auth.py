@@ -89,7 +89,5 @@ class BasicAuth(Auth):
             return None
 
         user_obj = self.extract_user_credentials(email, passwd)
-        if not user_obj:
-            return None
 
         return user_obj
