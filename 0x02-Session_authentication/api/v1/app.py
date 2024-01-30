@@ -27,11 +27,11 @@ elif AUTH_TYPE == "session_auth":
 
 
 @app.before_request
-def before_request() -> str:
+def before_request():
     """ Method that filters all requests
     """
     if auth is None:
-        return
+        pass
     else:
         setattr(request, "current_user", auth.current_user(request))
 
