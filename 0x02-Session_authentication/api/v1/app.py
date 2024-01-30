@@ -27,13 +27,11 @@ elif AUTH_TYPE == "session_auth":
 
 
 @app.before_request
-def before_request():
+def before_request() -> str:
     """ Method that filters all requests
     """
     if auth is None:
-        pass
-    else:
-        setattr(request, "current_user", auth.current_user(request))
+        return
     excluded_paths = ['/api/v1/status/', '/api/v1/unauthorized/',
                       '/api/v1/forbidden/']
 
@@ -45,6 +43,7 @@ def before_request():
 
     if auth.current_user(request) is None:
         abort(403)
+     setattr(request, "current_user", auth.current_user(request))
 
 
 @app.errorhandler(404)
