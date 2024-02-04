@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """ Session authentication specific views
 """
-from os import getenv
+import os
 from models.user import User
 from api.v1.views import app_views
 from flask import request, jsonify, make_response
@@ -22,9 +22,9 @@ def session_login():
     for user in users:
         if user.is_valid_password(pwd):
             from api.v1.app import auth
-            session_id = auth.create_session(user.get("id"))
-            session_name = getenv('SESSION_NAME')
+            session_id = auth.create_session(user.id)
+            session_name = os.getenv('SESSION_NAME')
             response = make_response(jsonify(user.to_json()))
             response.set_cookie(session_name, session_id)
             return response
-        return jsonify({"error": "wrong password"}), 401
+    return jsonify({"error": "wrong password"}), 401
