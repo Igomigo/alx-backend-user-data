@@ -4,7 +4,7 @@
 import os
 from models.user import User
 from api.v1.views import app_views
-from flask import request, jsonify, make_response
+from flask import request, jsonify, make_response, abort
 
 
 @app_views.route("/auth_session/login", methods=['POST'], strict_slashes=False)
@@ -34,6 +34,6 @@ def session_login():
 def logout():
     """ Handles the logout request """
     from api.v1.app import auth
-    if auth.destroy_session(request) is False:
-        abort(404)
-    return jsonify({}), 200
+    if auth.destroy_session(request):
+        return jsonify({}), 200
+    abort(404)
