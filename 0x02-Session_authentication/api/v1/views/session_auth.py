@@ -1,43 +1,30 @@
 #!/usr/bin/env python3
-""" Module of Users views
+""" Session authentication specific views
 """
-import os
-from api.v1.views import app_views
+from os import getenv
 from models.user import User
-from flask import jsonify, request
+from api.v1.views import app_views
+from flask import request, jsonify, make_response
 
 
-@app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
-def session_auth():
-    """_summary_
-    """
-    email = request.form.get('email')
-    password = request.form.get('password')
-    if email is None or email == '':
+@app_views.route("/auth_session/login", methods=['POST'], strict_slashes=False)
+def session_login():
+    """ Handles user login session """
+    email = request.form.get("email")
+    pwd = request.form.get("password")
+    if email is None or email == "":
         return jsonify({"error": "email missing"}), 400
-    if password is None or password == '':
+    if pwd is None or pwd == "":
         return jsonify({"error": "password missing"}), 400
     users = User.search({"email": email})
     if not users or users == []:
         return jsonify({"error": "no user found for this email"}), 404
     for user in users:
-        if user.is_valid_password(password):
+        if user.is_valid_password(pwd):
             from api.v1.app import auth
-            session_id = auth.create_session(user.id)
-            resp = jsonify(user.to_json())
-            session_name = os.getenv('SESSION_NAME')
-            resp.set_cookie(session_name, session_id)
-            return resp
-    return jsonify({"error": "wrong password"}), 401
-
-
-@app_views.route('/auth_session/logout',
-                 methods=['DELETE'], strict_slashes=False)
-def logout():
-    """
-    for logging out user
-    """
-    from api.v1.app import auth
-    if auth.destroy_session(request):
-        return jsonify({}), 200
-    abort(404)
+            session_id = auth.create_session(user.get("id"))
+            session_name = getenv('SESSION_NAME')
+            response = make_response(jsonify(user.to_json()))
+            response.set_cookie(session_name, session_id)
+            return response
+        return jsonify({"error": "wrong password"}), 401
