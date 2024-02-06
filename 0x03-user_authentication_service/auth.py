@@ -2,15 +2,11 @@
 """ Contains the authentication systems
 """
 import bcrypt
-from typing import Optional
 
 
-salt = bcrypt.gensalt()
-
-
-def _hash_password(password: str) -> Optional[bytes]:
+def _hash_password(password: str) -> str:
     """ Method hashes a password """
     if password is None:
         return None
-    hashed = bcrypt.hashpw(password.encode(), salt)
+    hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
     return hashed
