@@ -7,9 +7,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm.exc import NoResultFound
-from user import User
-
-from user import Base
+from user import Base, User
 
 
 class DB:
@@ -61,3 +59,25 @@ class DB:
             raise NoResultFound
 
         return user
+
+    def update_user(self, id: int, **kwargs) -> None:
+        """Updates a user data based on the passed parameter
+        """
+        if kwargs is None:
+            raise InvalidRequestError
+
+        table_columns = User.__table__.columns.keys()
+        for key in kwargs.keys():
+            if key not in table_columns:
+                raise ValueError
+
+        user = self.find_user_by(id=id)
+        if user is None:
+            raise NoResultFound
+
+        session = self._session
+        for key in table_columns:
+            if key in kwargs.keys():
+                setattr(user, key, kwargs.get(key))
+
+        session.commit()
