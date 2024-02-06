@@ -60,24 +60,18 @@ class DB:
 
         return user
 
-    def update_user(self, id: int, **kwargs) -> None:
-        """Updates a user data based on the passed parameter
+    def update_user(self, user_id: int, **kwargs) -> None:
+        """ Update users attributes
+        Returns: None
         """
-        if kwargs is None:
-            raise InvalidRequestError
+        user = self.find_user_by(id=user_id)
 
-        table_columns = User.__table__.columns.keys()
+        column_names = User.__table__.columns.keys()
         for key in kwargs.keys():
-            if key not in table_columns:
+            if key not in column_names:
                 raise ValueError
 
-        user = self.find_user_by(id=id)
-        if user is None:
-            raise NoResultFound
+        for key, value in kwargs.items():
+            setattr(user, key, value)
 
-        session = self._session
-        for key in table_columns:
-            if key in kwargs.keys():
-                setattr(user, key, kwargs.get(key))
-
-        session.commit()
+        self._session.commit()
