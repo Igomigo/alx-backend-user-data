@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """ Contains the flask app
 """
-from flask import Flask, jsonify, request, abort, make_request
+from flask import Flask, jsonify, request, abort, make_response
 from auth import Auth
-from sqlalchemy.exc import NoResultFound
 
 AUTH = Auth()
 app = Flask(__name__)
@@ -29,17 +28,20 @@ def user():
         return jsonify({"message": "email already registered"}), 400
 
 
-@app.route("/sessions", methods=["POST"], strict_slashes=False)
+@app.route('/sessions', methods=['POST'], strict_slashes=False)
 def login() -> str:
-    """ Handles the login operation as well as session management """
+    """ Logs in a user and returns session ID """
     try:
-        email = request.form.get("email")
-        password = request.form.get("password")
+        email = request.form.get('email')
+        password = request.form.get('password')
     except KeyError:
         abort(400)
+
     if not AUTH.valid_login(email, password):
         abort(401)
+
     session_id = AUTH.create_session(email)
+
     msg = {"email": email, "message": "logged in"}
     response = make_response(jsonify(msg))
 
