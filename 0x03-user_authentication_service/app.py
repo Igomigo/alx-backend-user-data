@@ -1,33 +1,30 @@
 #!/usr/bin/env python3
 """ Contains the flask app
 """
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
+from auth import Auth
 
-
+AUTH = Auth()
 app = Flask(__name__)
 
 
 @app.route("/", methods=["GET"])
-def message() -> str:
+def message():
     return jsonify({"message": "Bienvenue"}), 200
 
-
 @app.route("/users", methods=["POST"], strict_slashes=False)
-def user() -> str:
+def user():
     """ Registers a user """
+    email = request.form.get("email")
+    password = request.form.get("password")
+    if email is None or password is None:
+        return "No email and password"
     try:
-        email = request.form['email']
-        password = request.form['password']
-    except KeyError:
-        abort(400)
-
-    try:
-        user = AUTH.register_user(email, password)
+        AUTH.register_user(email, password)
+        message = {"email": email, "message": "user created"}
+        return jsonify(message), 200
     except ValueError:
         return jsonify({"message": "email already registered"}), 400
-
-    msg = {"email": email, "message": "user created"}
-    return jsonify(msg)
 
 
 if __name__ == "__main__":
