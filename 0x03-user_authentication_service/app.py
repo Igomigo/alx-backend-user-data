@@ -28,22 +28,24 @@ def user():
     except ValueError:
         return jsonify({"message": "email already registered"}), 400
 
+
 @app.route("/sessions", methods=["POST"], strict_slashes=False)
 def login() -> str:
     """ Handles the login operation as well as session management """
-    email = request.form.get("email")
-    password = request.form.get("password")
-    if email is None or password is None:
-        return "No email or password"
     try:
-        if AUTH.valid_login(email, password):
-            session_id = AUTH.create_session(email)
-            msg = {"email": f"{email}", "message": "logged in"}
-            response = make_response(jsonify(msg), 200)
-            response.set_cookie("session_id", session_id)
-            return response
-    except NoResultFound:
+        email = request.form.get("email")
+        password = request.form.get("password")
+    except KeyError:
+        abort(400)
+    if not AUTH.valid_login(email, password):
         abort(401)
+    session_id = AUTH.create_session(email)
+    msg = {"email": email, "message": "logged in"}
+    response = make_response(jsonify(msg))
+
+    response.set_cookie("session_id", session_id)
+
+    return response
 
 
 if __name__ == "__main__":
