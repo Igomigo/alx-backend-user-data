@@ -100,3 +100,17 @@ class Auth:
         token = _generate_uuid()
         self._db.update_user(user.id, reset_token=token)
         return token
+
+    def update_password(self, token: str, password: str) -> None:
+        """ finds a user with the rset_token string passed
+            and updates the corresponding user password to the
+            passed password
+        """
+        if token is None or password is None:
+            return None
+        try:
+            user = self._db.find_user_by(reset_token=token)
+        except NoResultFound:
+            raise ValueError
+        hashed = _hash_password(password)
+        self._db.update_user(user.id, hashed_password=hashed, reset_token=None)
