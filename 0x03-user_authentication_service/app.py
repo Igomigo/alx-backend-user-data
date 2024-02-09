@@ -94,13 +94,19 @@ def get_reset_password_token() -> str:
 
 @app.route("/reset_password", methods=["PUT"], strict_slashes=False)
 def reset_password() -> str:
-    """ Handles the reset password operation """
+    """ PUT /reset_password
+    Updates password with reset token
+    Return:
+        - 400 if bad request
+        - 403 if not valid reset token
+        - 200 and JSON Payload if valid
+    """
     try:
         email = request.form.get("email")
         token = request.form.get("reset_token")
         new_pwd = request.form.get("new_password")
     except KeyError:
-        abort(403)
+        abort(400)
 
     try:
         AUTH.update_password(token, new_pwd)
